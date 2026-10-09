@@ -1,0 +1,21 @@
+{
+  "name": "laloupe-annuaire",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "workspaces": ["apps/*"],
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10"
+  },
+  "scripts": {
+    "dev": "npm run dev --workspace=@laloupe/annuaire --",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "check": "node scripts/check-sites.mjs",
+    "check:build": "node scripts/check-sites.mjs --built",
+    "prepare:deploy": "npm run check:build && node scripts/prepare-deploy.mjs",
+    "check:http": "node scripts/check-http.mjs",
+    "test:deploy": "node --test deploy/deploy.test.mjs"
+  }
+}

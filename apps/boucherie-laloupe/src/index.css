@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 35 25% 96%;
+    --foreground: 25 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 25 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 25% 15%;
+
+    --primary: 0 65% 45%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 25 35% 88%;
+    --secondary-foreground: 25 25% 15%;
+
+    --muted: 35 20% 92%;
+    --muted-foreground: 25 15% 55%;
+
+    --accent: 45 85% 65%;
+    --accent-foreground: 25 25% 15%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 25 20% 85%;
+    --input: 25 20% 90%;
+    --ring: 0 65% 45%;
+
+    --radius: 0.75rem;
+
+    /* Boucherie design tokens */
+    --butcher-red: 0 65% 45%;
+    --butcher-red-dark: 0 65% 35%;
+    --butcher-brown: 25 45% 25%;
+    --butcher-gold: 45 85% 65%;
+    --butcher-cream: 35 25% 96%;
+    --butcher-dark: 25 25% 15%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--butcher-red)), hsl(var(--butcher-red-dark)));
+    --gradient-warm: linear-gradient(180deg, hsl(var(--butcher-cream)), hsl(var(--secondary)));
+    --gradient-gold: linear-gradient(135deg, hsl(var(--butcher-gold)), hsl(45 75% 55%));
+
+    /* Shadows */
+    --shadow-warm: 0 10px 30px -10px hsl(var(--butcher-red) / 0.3);
+    --shadow-soft: 0 4px 20px -4px hsl(var(--butcher-brown) / 0.2);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 25 25% 12%;
+    --foreground: 35 25% 96%;
+
+    --card: 25 25% 15%;
+    --card-foreground: 35 25% 96%;
+
+    --popover: 25 25% 15%;
+    --popover-foreground: 35 25% 96%;
+
+    --primary: 0 65% 55%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 25 20% 20%;
+    --secondary-foreground: 35 25% 96%;
+
+    --muted: 25 20% 18%;
+    --muted-foreground: 25 15% 65%;
+
+    --accent: 45 75% 60%;
+    --accent-foreground: 25 25% 15%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 25 20% 25%;
+    --input: 25 20% 20%;
+    --ring: 0 65% 55%;
+
+    --butcher-red: 0 65% 55%;
+    --butcher-red-dark: 0 65% 45%;
+    --butcher-brown: 25 35% 35%;
+    --butcher-gold: 45 75% 70%;
+    --butcher-cream: 25 25% 12%;
+    --butcher-dark: 35 25% 96%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

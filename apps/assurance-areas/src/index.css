@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AREAS Insurance Agency Design System - Professional & Trustworthy */
+
+@layer base {
+  :root {
+    /* Primary Brand Colors - Professional Blue */
+    --primary: 213 94% 28%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 213 94% 40%;
+    --primary-dark: 213 94% 20%;
+
+    /* Secondary Colors - Premium Gold */
+    --secondary: 45 87% 55%;
+    --secondary-foreground: 213 94% 20%;
+    --secondary-light: 45 87% 65%;
+
+    /* Neutral Palette */
+    --background: 0 0% 100%;
+    --foreground: 213 20% 15%;
+    --muted: 213 12% 96%;
+    --muted-foreground: 213 12% 45%;
+
+    /* Card & Surface Colors */
+    --card: 0 0% 100%;
+    --card-foreground: 213 20% 15%;
+
+    /* Interactive Elements */
+    --accent: 213 94% 95%;
+    --accent-foreground: 213 94% 28%;
+    --border: 213 20% 90%;
+    --input: 213 20% 94%;
+    --ring: 213 94% 28%;
+
+    /* Status Colors */
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 213 20% 15%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(213 94% 28%), hsl(213 94% 40%));
+    --gradient-hero: linear-gradient(135deg, hsl(213 94% 28%) 0%, hsl(213 94% 40%) 50%, hsl(45 87% 55%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(213 12% 98%) 100%);
+
+    /* Shadows */
+    --shadow-soft: 0 4px 20px hsl(213 20% 15% / 0.08);
+    --shadow-medium: 0 8px 32px hsl(213 20% 15% / 0.12);
+    --shadow-strong: 0 16px 64px hsl(213 20% 15% / 0.16);
+
+    /* Typography */
+    --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* Spacing & Layout */
+    --radius: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+  }
+
+  .dark {
+    --background: 213 20% 8%;
+    --foreground: 0 0% 95%;
+    --card: 213 20% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 213 20% 10%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 213 94% 40%;
+    --primary-foreground: 213 20% 8%;
+    --secondary: 45 87% 45%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 213 20% 15%;
+    --muted-foreground: 213 12% 65%;
+    --accent: 213 20% 15%;
+    --accent-foreground: 0 0% 95%;
+    --border: 213 20% 20%;
+    --input: 213 20% 15%;
+    --ring: 213 94% 40%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-family: var(--font-body);
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+
+@layer components {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+
+  .gradient-hero {
+    background: var(--gradient-hero);
+  }
+
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+
+  .shadow-medium {
+    box-shadow: var(--shadow-medium);
+  }
+
+  .shadow-strong {
+    box-shadow: var(--shadow-strong);
+  }
+}

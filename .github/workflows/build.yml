@@ -1,0 +1,107 @@
+name: Build and deploy static sites
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: annuaire-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  RELEASE_ID: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run test:deploy
+      - run: npm run build
+      - run: npm run prepare:deploy
+      - name: Validate Compose and build the image
+        env:
+          ANNUAIRE_IMAGE: laloupe-annuaire:${{ env.RELEASE_ID }}
+        run: |
+          docker compose -f dist/deploy/docker-compose.json config --quiet
+          docker build -t "$ANNUAIRE_IMAGE" -f deploy/Dockerfile dist/deploy
+          docker run --rm "$ANNUAIRE_IMAGE" nginx -t
+      - name: Test all virtual hosts
+        env:
+          ANNUAIRE_IMAGE: laloupe-annuaire:${{ env.RELEASE_ID }}
+        run: |
+          trap 'docker rm -f annuaire-smoke >/dev/null 2>&1 || true' EXIT
+          docker run -d --name annuaire-smoke -p 127.0.0.1:18080:80 "$ANNUAIRE_IMAGE"
+          npm run check:http
+      - name: Export the tested image
+        run: docker image save "laloupe-annuaire:$RELEASE_ID" | gzip -1 > dist/deploy/image.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: annuaire-vps
+          path: |
+            dist/deploy/image.tar.gz
+            dist/deploy/docker-compose.json
+            dist/deploy/sites.json
+            dist/deploy/nginx.conf
+          if-no-files-found: error
+          retention-days: 14
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+      APPS_PATH: ${{ secrets.APPS_PATH }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check deployment settings
+        shell: bash
+        run: |
+          for variable in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS APPS_PATH; do
+            if [[ -z "${!variable}" ]]; then
+              printf 'Missing GitHub secret: %s\n' "$variable" >&2
+              exit 1
+            fi
+          done
+          [[ "$APPS_PATH" =~ ^(/|[a-zA-Z0-9_])[a-zA-Z0-9_./-]*$ ]]
+          [[ "$SSH_USER" =~ ^[a-zA-Z_][a-zA-Z0-9_-]*$ ]]
+          [[ "$SSH_HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*$ ]]
+      - uses: actions/download-artifact@v4
+        with:
+          name: annuaire-vps
+          path: dist/deploy
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Pin the SSH host key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+      - name: Transfer and deploy the tested image
+        env:
+          RSYNC_RSH: ssh -o StrictHostKeyChecking=yes
+        run: |
+          target="$SSH_USER@$SSH_HOST"
+          deployment_path="${APPS_PATH%/}/annuaire"
+          ssh -o StrictHostKeyChecking=yes "$target" "mkdir -p '$deployment_path/releases/$RELEASE_ID'"
+          rsync -az dist/deploy/ "$target:$deployment_path/releases/$RELEASE_ID/"
+          ssh -o StrictHostKeyChecking=yes "$target" \
+            "bash -s -- '$deployment_path' '$RELEASE_ID'" < deploy/deploy.sh
