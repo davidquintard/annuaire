@@ -66,14 +66,13 @@ jobs:
       SSH_HOST: ${{ secrets.SSH_HOST }}
       SSH_USER: ${{ secrets.SSH_USER }}
       SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
       APPS_PATH: ${{ secrets.APPS_PATH }}
     steps:
       - uses: actions/checkout@v4
       - name: Check deployment settings
         shell: bash
         run: |
-          for variable in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS APPS_PATH; do
+          for variable in SSH_HOST SSH_USER SSH_PRIVATE_KEY APPS_PATH; do
             if [[ -z "${!variable}" ]]; then
               printf 'Missing GitHub secret: %s\n' "$variable" >&2
               exit 1
@@ -89,11 +88,12 @@ jobs:
       - uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Pin the SSH host key
+      - name: Add server to known hosts
         run: |
           mkdir -p ~/.ssh
           chmod 700 ~/.ssh
-          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh-keyscan -T 10 -H "$SSH_HOST" > ~/.ssh/known_hosts
+          [[ -s ~/.ssh/known_hosts ]]
           chmod 600 ~/.ssh/known_hosts
       - name: Transfer and deploy the tested image
         env:

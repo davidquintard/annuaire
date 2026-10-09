@@ -124,12 +124,13 @@ GitHub le permet. Configurer les secrets suivants dans cet environnement :
 | `SSH_HOST` | Adresse IPv4 ou nom DNS du VPS, sans protocole ni port |
 | `SSH_USER` | Compte de deploiement sur le VPS |
 | `SSH_PRIVATE_KEY` | Cle privee SSH dediee dont la cle publique est autorisee sur le VPS |
-| `SSH_KNOWN_HOSTS` | Ligne(s) `known_hosts` correspondant exactement a `SSH_HOST` |
 | `APPS_PATH` | Repertoire parent des applications sur le VPS, comme dans les autres projets |
 
 Saisir les secrets directement dans GitHub, jamais dans le depot ou dans le chat.
-Verifier l'empreinte de la cle hote SSH par un canal de confiance, par exemple
-la console OVH ; ne pas accepter aveuglement le resultat de `ssh-keyscan`.
+Comme dans les autres projets, le workflow remplit `known_hosts` automatiquement
+avec `ssh-keyscan`. Aucun secret supplementaire de cle hote n'est necessaire.
+Cette methode ne verifie pas la cle recuperee contre une empreinte prealablement
+connue ; elle ne protege donc pas contre une interception lors de cette collecte.
 
 Le secret `APPS_PATH` est obligatoire et reprend la convention des autres projets :
 le workflow ajoute `/annuaire` pour obtenir le repertoire de deploiement de ce
